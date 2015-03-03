@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pediatre</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="lib/leaflet-0.7.3/leaflet.css" />
+	<link rel="stylesheet" href="css/Control.OSMGeocoder.css" />
+
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" />
+ 
+	<style type="text/css">
+		#map { width: 95%; height: 600px; }
+		.leaflet-control-zoom-fullscreen { background-image: url(img/icon-fullscreen.png); }
+		/* on selector per rule as explained here : http://www.sitepoint.com/html5-full-screen-api/ */
+		#map:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+		#map:-moz-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+		#map:full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+		.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }
+		.fixed {
+  		position: fixed;
+  		top: 0;
+  		right: 50px;
+  		width: 250px;
+  		background-color: white;
+		}
+
+		.info {
+	    padding: 6px 8px;
+	    font: 14px/16px Arial, Helvetica, sans-serif;
+	    background: white;
+	    background: rgba(255,255,255,0.8);
+	    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	    border-radius: 5px;
+	        }
+	    .info h2 {
+	    margin: 0 0 5px;
+	    color: #777;
+	}
+
+	</style>	
+</head>
+<body>
+	<!-- calque map -->
+	<div id="map"></div>
+
+	<!--libs -->
+	<!-- appel de la librairie Leaflet -->
+	<script src="lib/leaflet-0.7.3/leaflet.js"></script>
+
+	<script src="lib/d3/d3.v3.min.js"></script>
+	<script src="lib/Control.OSMGeocoder.js"></script> 
+
+	<script src="lib/jquery/jquery-1.11.2.min.js"></script>
+
+	<script src="lib/bootstrap/bootstrap.min.js"></script>
+
+	<!-- script carte leaflet -->
+	<script>
+
+		//Instanciation de l'objet map
+		var map = L.map('map', {
+			//layers: [ign, cassini_routes,cassini_urbain,cassini_hydro_l,cassini_hydro_s],
+			fullscreenControl: true,
+			fullscreenControlOptions: { // optional
+			title:"Fullscreen !"
+			}
+		});
+
+		//définition de l'emprise initiale de la map
+		map.setView([48.75, 2], 8);
+
+		//Ajout Layer Fond de plan OSM
+		var mapbox = L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-i875mjb7'
+		});
+		mapbox.addTo(map);
+
+		//Ajout du fond OSM
+		var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+		osm.addTo(map);
+	
+	
+ 
+
+		// detect fullscreen toggling
+		map.on('enterFullscreen', function(){
+			if(window.console) window.console.log('enterFullscreen');
+		});
+		map.on('exitFullscreen', function(){
+			if(window.console) window.console.log('exitFullscreen');
+		});
+
+		//défintion des layers pour le contrôleur de couches
+
+		var baseLayers = {
+			"OSM":osm,
+			"OSM MapBox":mapbox		
+
+		};
+
+
+		var overlays = {
+		
+		};
+
+		//controleur de couches
+		L.control.layers(baseLayers, overlays).addTo(map);
+
+		//Ajout de l'échelle
+		L.control.scale().addTo(map);
+
+		//Ajout Geocoder
+       // var osmGeocoder = new L.Control.OSMGeocoder();
+		//map.addControl(osmGeocoder);		
+	
+
+		//ajout des titres et sous-titres
+		/*var title = new L.Control();
+		title.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+	    };
+	    title.update = function () {
+			this._div.innerHTML = '<h2>Les transports en <br> Ile-de-France </h2>2014<br><center><img src="img/stif_logo.png" /><br><img src="img/sncf_logo.png" /><br><img src="img/autolib_logo.png" /></center>'
+		};
+		title.addTo(map);	*/	
+function getColor(d) {
+	console.log(d);
+	var result = 		    	
+                    d > 50 ? '#81fe79' :
+		            d > 45 ? '#20fe11' :
+                    d > 35 ? '#84be79' :
+		            d > 25 ? '#81fe79' :
+           			d > 20  ? '#63da86' :
+           			d > 15  ? '#42b78d' :
+          	 		d > 10  ? '#0d968e' :
+           			d > 5  ? '#00758e' :           			
+           			d > 0   ? '#0037b1' :
+                      			'#aaa';
+                      			console.log(result);
+
+                      			return  result;
+		}
+
+		d3.csv("data/donneFinal.csv",function(data){
+			console.log(data);
+			data.forEach(function(elem,index,tab){
+				
+				if( (elem.lat && elem.lon) != "NaN")
+				 circle = L.circle([+elem.lat,+elem.lon],+elem.Tarif*30)
+			 .setStyle({fill:true, fillColor: getColor(+elem.Dlai_rendez_vous), fillOpacity:0.6})			 
+						.addTo(map)
+			.bindPopup('<h3>Tarif: </h3> <b>'+elem.Tarif)
+			.addEventListener('mouseover',function(event){					  
+				 console.log("xsvdfdfv"+ index)
+				});
+
+			})
+		});
+
+
+var legend = L.control({position: 'bottomleft'});
+
+		// fonction de creation de la légende
+		legend.onAdd = function (map) {
+    		var div = L.DomUtil.create('div', 'info legend'),
+        		grades = [0,12,15,16,17,18,19,20],
+        		labels = [];
+			div.innerHTML += '<h4>Date de construction</h4><i style="background:#aaa"></i> inconnu<br>';
+    			// loop through our density intervals and generate a label with a colored square for each interval
+    			for (var i = 0; i < grades.length-1; i++) {
+        			div.innerHTML +=
+            			'<i style="background:red"></i> ' +
+            			grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + ' siècle<br>' : '+');
+    			}
+
+    		return div;
+		};
+		legend.addTo(map);
+
+	
+		
+
+	</script>
+
+
+</body>
+</html>
