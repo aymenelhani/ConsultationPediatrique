@@ -40,24 +40,43 @@
 	    color: #777;
 	}
 
+	body { padding-top: 50px; }
+
 	</style>	
 </head>
 <body>
-<form class="navbar-form navbar-left navbar-inverse" >
+ 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+  	<div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        Home
+      </a>
+    </div>
+
+
+<form class="navbar-form navbar-left" role="search">
   <div class="form-group">
-    <select class="form-control" placeholder="change radius">
+  	<span class="glyphicon glyphicon-registration-mark" style="color:white">Changer le rayon</span>
+    <select class="form-control" placeholder="change radius" onchange="updateRadius(this.value)">
     	<option value="Tarif"> Tarif </option>
-    	<option value="DÈpassement honoraire"> DÈpassement honoraire </option>
-    	<option value="--"> --- </option>
+    	<option value="Dpassement_honoraires"> D√©passement honoraire </option>
+    	<option value="Dlai_rendez_vous"> D√©lais RDV </option>
     </select>
- <select class="form-control" placeholder="change color">
+    <span class="glyphicon glyphicon-adjust" style="color:white"> Changer la couleur </<span>
+ <select class="form-control" placeholder="change color" onchange="updateColor(this.value)">
     	<option value="Tarif"> Tarif </option>
-    	<option value="DÈpassement honoraire"> DÈpassement honoraire </option>
-    	<option value="--"> -- </option>
-    </select>
+    	<option value="D√©passement honoraire"> D√©passement honoraire </option>
+    	<option value="Dlai_rendez_vous"> D√©lais RDV </option>
+    </select> 
   </div>
-  <button type="submit" class="btn btn-default">Submit</button>
+  
 </form>
+
+
+    
+  </div>
+</nav>
 
 	<!-- calque map -->
 	<div id="map"></div>
@@ -75,8 +94,8 @@
 
 	<!-- script carte leaflet -->
 	<script>
-var selectedCircleRadius;
-var selectedCircleColor;
+var selectedCircleRadius="Tarif";
+var selectedCircleColor="Dlai_rendez_vous";
 		//Instanciation de l'objet map
 		var map = L.map('map', {
 			//layers: [ign, cassini_routes,cassini_urbain,cassini_hydro_l,cassini_hydro_s],
@@ -86,7 +105,7 @@ var selectedCircleColor;
 			}
 		});
 
-		//dÈfinition de l'emprise initiale de la map
+		//d√©finition de l'emprise initiale de la map
 		map.setView([48.75, 2], 8);
 
 		//Ajout Layer Fond de plan OSM
@@ -94,7 +113,7 @@ var selectedCircleColor;
 			maxZoom: 18,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				'Imagery ¬© <a href="http://mapbox.com">Mapbox</a>',
 			id: 'examples.map-i875mjb7'
 		});
 		mapbox.addTo(map);
@@ -114,7 +133,7 @@ var selectedCircleColor;
 			if(window.console) window.console.log('exitFullscreen');
 		});
 
-		//dÈfintion des layers pour le contrÙleur de couches
+		//d√©fintion des layers pour le contr√¥leur de couches
 
 		var baseLayers = {
 			"OSM":osm,
@@ -130,7 +149,7 @@ var selectedCircleColor;
 		//controleur de couches
 		L.control.layers(baseLayers, overlays).addTo(map);
 
-		//Ajout de l'Èchelle
+		//Ajout de l'√©chelle
 		L.control.scale().addTo(map);
 
 		//Ajout Geocoder
@@ -167,6 +186,22 @@ function getColor(d) {
 		}
 		//var circles = new L.layerGroup();
 		var circles = new L.featureGroup();
+		circles.on("layeradd",function(evt){
+			console.log("add layer added");
+	 
+    d3.select("path").transition()
+    .duration(1000)
+    .attr("transform", "translate(100, 100)")    
+
+		})
+		.on("layerremove",function(evt){
+			console.log("add layer added");
+	 
+    d3.select("path").transition()
+    .duration(1000)
+    .attr("transform", "translate(100, 100)")    
+
+		});
 
 	/*	d3.csv("data/donneFinal.csv",function(data){
 			console.log(data);
@@ -194,6 +229,132 @@ function getColor(d) {
 			
             console.log(index,circle);
             if(circle != undefined){
+            	circle.tarif = elem.Tarif; 
+            	circle.ville = elem.Ville;           	
+
+            	circles.addLayer(circle);
+            }
+			
+   
+			})
+			console.log("for each termin√©");
+			 //map.addLayer(circles);
+			 circles
+			.addEventListener('mouseover',function(event){					  
+				 console.log( event.layer.tarif)
+				 //circles.clearLayers();
+				})
+    .on('click', function(evt) { 
+circles.bindPopup(evt.layer.tarif)
+
+$.get("https://nominatim.openstreetmap.org/search.php?q="+evt.layer.ville+"&format=json&polygon=1",
+	function(data){
+		console.log(evt.layer.ville);
+		console.log("ajax call")
+		console.log(data);
+		console.log(data[0].polygonpoints);
+		/*var cordone = data[0].svg.split(" ");
+		console.log(cordone);  
+		var tabCordone = [];
+		var i = 4;
+		var j = 1;
+		tabCordone[0] = [+cordone[1],+cordone[2]]
+		while(i < cordone.length-1){
+			tabCordone[j] = [+cordone[i],+cordone[i+1]];
+			i+=2
+			j++;
+		}
+		console.log([[tabCordone]]);*/
+
+	/*	var geoJsonFeaturePoly = {
+"type": "FeatureCollection",
+                                                                                
+"features": [{
+
+    "type": "Feature",
+    "properties": {"party": "Democrat"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[tabCordone]]
+    }
+}]
+};
+
+L.geoJson(geoJsonFeaturePoly,{
+	style:{
+    color: "#ff7800",
+    weight: 5,
+    opacity: 1
+}
+}).addTo(map);*/
+
+
+var states = [{
+    "type": "Feature",
+    "properties": {"party": "Republican"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+data[0].polygonpoints
+        ]]
+    }
+}];
+
+L.geoJson(states, {
+    style: function(feature) {
+        switch (feature.properties.party) {
+            case 'Republican': return {color: "#ff0000"};
+            case 'Democrat':   return {color: "#0000ff"};
+        }
+    }
+}).addTo(map);
+
+
+
+	});
+     });
+
+			circles.addTo(map);
+
+		});
+
+
+var legend = L.control({position: 'bottomleft'});
+
+		// fonction de creation de la l√©gende
+		legend.onAdd = function (map) {
+    		var div = L.DomUtil.create('div', 'info legend'),
+        		grades = [0,12,15,16,17,18,19,20],
+        		labels = [];
+			div.innerHTML += '<h4>Date de construction</h4><i style="background:#aaa"></i> inconnu<br>';
+    			// loop through our density intervals and generate a label with a colored square for each interval
+    			for (var i = 0; i < grades.length-1; i++) {
+        			div.innerHTML +=
+            			'<i style="background:red"></i> ' +
+            			grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + ' si√®cle<br>' : '+');
+    			}
+
+    		return div;
+		};
+		legend.addTo(map);
+
+	
+ //onselect event pour le choix de variable repr√©sent√© par le rayon des cercles
+function updateRadius(value){
+console.log("update rayon")
+selectedCircleRadius = value;
+
+circles.clearLayers();
+
+d3.csv("data/donneFinal.csv",function(data){			
+			data.forEach(function(elem,index,tab){
+				
+				if( (elem.lat && elem.lon) != "NaN")
+			 var circle = new L.circle([+elem.lat,+elem.lon],+elem[value]*30)
+			.setStyle({fill:true, fillColor: getColor(+elem[selectedCircleColor]), fillOpacity:0.6});	
+			
+            console.log(index,circle);
+            if(circle != undefined){
             	circle.tarif = elem.Tarif;            	
 
             	circles.addLayer(circle);
@@ -201,7 +362,7 @@ function getColor(d) {
 			
    
 			})
-			console.log("for each terminÈ");
+			console.log("for each termin√©");
 			 //map.addLayer(circles);
 			 circles
 			.addEventListener('mouseover',function(event){					  
@@ -214,32 +375,53 @@ circles.bindPopup(evt.layer.tarif)
 
 			circles.addTo(map);
 
+		});
+ 
 
+}
+
+//onselect event pour le choix de variable repr√©sent√© par la couleur
+function updateColor(value){
+	console.log("update color")
+
+selectedCircleColor = value;
+
+circles.clearLayers();
+
+d3.csv("data/donneFinal.csv",function(data){			
+			data.forEach(function(elem,index,tab){
+				
+				if( (elem.lat && elem.lon) != "NaN")
+			 var circle = new L.circle([+elem.lat,+elem.lon],+elem[selectedCircleRadius]*30)
+			.setStyle({fill:true, fillColor: getColor(+elem[value]), fillOpacity:0.6});	
+			
+            console.log(index,circle);
+            if(circle != undefined){
+            	circle.tarif = elem.Tarif;            	
+
+            	circles.addLayer(circle);
+            }
+			
+   
+			})
+			console.log("for each termin√©");
+			 //map.addLayer(circles);
+			 circles
+			.addEventListener('mouseover',function(event){					  
+				 console.log( event.layer.tarif)
+				 //circles.clearLayers();
+				})
+    .on('click', function(evt) { 
+circles.bindPopup(evt.layer.tarif)
+     });
+
+			circles.addTo(map);
 
 		});
 
+}
 
-var legend = L.control({position: 'bottomleft'});
 
-		// fonction de creation de la lÈgende
-		legend.onAdd = function (map) {
-    		var div = L.DomUtil.create('div', 'info legend'),
-        		grades = [0,12,15,16,17,18,19,20],
-        		labels = [];
-			div.innerHTML += '<h4>Date de construction</h4><i style="background:#aaa"></i> inconnu<br>';
-    			// loop through our density intervals and generate a label with a colored square for each interval
-    			for (var i = 0; i < grades.length-1; i++) {
-        			div.innerHTML +=
-            			'<i style="background:red"></i> ' +
-            			grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + ' siËcle<br>' : '+');
-    			}
-
-    		return div;
-		};
-		legend.addTo(map);
-
-	
-		
 
 	</script>
 
