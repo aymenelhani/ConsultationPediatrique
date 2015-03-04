@@ -43,6 +43,22 @@
 	</style>	
 </head>
 <body>
+<form class="navbar-form navbar-left navbar-inverse" >
+  <div class="form-group">
+    <select class="form-control" placeholder="change radius">
+    	<option value="Tarif"> Tarif </option>
+    	<option value="Dépassement honoraire"> Dépassement honoraire </option>
+    	<option value="--"> --- </option>
+    </select>
+ <select class="form-control" placeholder="change color">
+    	<option value="Tarif"> Tarif </option>
+    	<option value="Dépassement honoraire"> Dépassement honoraire </option>
+    	<option value="--"> -- </option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
 	<!-- calque map -->
 	<div id="map"></div>
 
@@ -59,7 +75,8 @@
 
 	<!-- script carte leaflet -->
 	<script>
-
+var selectedCircleRadius;
+var selectedCircleColor;
 		//Instanciation de l'objet map
 		var map = L.map('map', {
 			//layers: [ign, cassini_routes,cassini_urbain,cassini_hydro_l,cassini_hydro_s],
@@ -133,7 +150,7 @@
 		};
 		title.addTo(map);	*/	
 function getColor(d) {
-	console.log(d);
+	
 	var result = 		    	
                     d > 50 ? '#81fe79' :
 		            d > 45 ? '#20fe11' :
@@ -144,13 +161,14 @@ function getColor(d) {
           	 		d > 10  ? '#0d968e' :
            			d > 5  ? '#00758e' :           			
            			d > 0   ? '#0037b1' :
-                      			'#aaa';
-                      			console.log(result);
+                      			'#aaa';                      			
 
                       			return  result;
 		}
+		//var circles = new L.layerGroup();
+		var circles = new L.featureGroup();
 
-		d3.csv("data/donneFinal.csv",function(data){
+	/*	d3.csv("data/donneFinal.csv",function(data){
 			console.log(data);
 			data.forEach(function(elem,index,tab){
 				
@@ -164,6 +182,40 @@ function getColor(d) {
 				});
 
 			})
+		}); */
+
+	d3.csv("data/donneFinal.csv",function(data){
+			console.log(data);
+			data.forEach(function(elem,index,tab){
+				
+				if( (elem.lat && elem.lon) != "NaN")
+			 var circle = new L.circle([+elem.lat,+elem.lon],+elem.Tarif*30)
+			.setStyle({fill:true, fillColor: getColor(+elem.Dlai_rendez_vous), fillOpacity:0.6});	
+			
+            console.log(index,circle);
+            if(circle != undefined){
+            	circle.tarif = elem.Tarif;            	
+
+            	circles.addLayer(circle);
+            }
+			
+   
+			})
+			console.log("for each terminé");
+			 //map.addLayer(circles);
+			 circles
+			.addEventListener('mouseover',function(event){					  
+				 console.log( event.layer.tarif)
+				 //circles.clearLayers();
+				})
+    .on('click', function(evt) { 
+circles.bindPopup(evt.layer.tarif)
+     });
+
+			circles.addTo(map);
+
+
+
 		});
 
 
