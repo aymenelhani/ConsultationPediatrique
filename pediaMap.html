@@ -96,6 +96,14 @@
 	<script>
 var selectedCircleRadius="Tarif";
 var selectedCircleColor="Dlai_rendez_vous";
+var limiteVilleLayer = new L.featureGroup();
+var flag = false;
+
+
+limiteVilleLayer.on('click', function(evt) { 
+deleteLimiteLayer()
+     })		
+
 		//Instanciation de l'objet map
 		var map = L.map('map', {
 			//layers: [ign, cassini_routes,cassini_urbain,cassini_hydro_l,cassini_hydro_s],
@@ -187,21 +195,30 @@ function getColor(d) {
 		//var circles = new L.layerGroup();
 		var circles = new L.featureGroup();
 		circles.on("layeradd",function(evt){
-			console.log("add layer added");
-	 
-    d3.select("path").transition()
-    .duration(1000)
-    .attr("transform", "translate(100, 100)")    
+			console.log("add layer added");  
 
 		})
 		.on("layerremove",function(evt){
-			console.log("add layer added");
-	 
-    d3.select("path").transition()
-    .duration(1000)
-    .attr("transform", "translate(100, 100)")    
+			console.log("add layer added");	
 
-		});
+		})
+		.on('click', function(evt) { 
+circles.bindPopup(evt.layer.tarif)
+deleteLimiteLayer()
+drawLimiteVille(evt.layer.ville)
+ 
+
+     })		 
+		.on("mouseout",function(){
+    	console.log("mouse out circle");
+    	
+
+    })
+    .on('mouseover',function(event){					  
+				 console.log( event.layer.tarif)
+				
+				})
+    
 
 	/*	d3.csv("data/donneFinal.csv",function(data){
 			console.log(data);
@@ -230,93 +247,19 @@ function getColor(d) {
             console.log(index,circle);
             if(circle != undefined){
             	circle.tarif = elem.Tarif; 
-            	circle.ville = elem.Ville;           	
-
+            	circle.ville = elem.Ville;  
+                   
             	circles.addLayer(circle);
             }
 			
    
 			})
 			console.log("for each terminé");
-			 //map.addLayer(circles);
-			 circles
-			.addEventListener('mouseover',function(event){					  
-				 console.log( event.layer.tarif)
-				 //circles.clearLayers();
-				})
-    .on('click', function(evt) { 
-circles.bindPopup(evt.layer.tarif)
-
-$.get("https://nominatim.openstreetmap.org/search.php?q="+evt.layer.ville+"&format=json&polygon=1",
-	function(data){
-		console.log(evt.layer.ville);
-		console.log("ajax call")
-		console.log(data);
-		console.log(data[0].polygonpoints);
-		/*var cordone = data[0].svg.split(" ");
-		console.log(cordone);  
-		var tabCordone = [];
-		var i = 4;
-		var j = 1;
-		tabCordone[0] = [+cordone[1],+cordone[2]]
-		while(i < cordone.length-1){
-			tabCordone[j] = [+cordone[i],+cordone[i+1]];
-			i+=2
-			j++;
-		}
-		console.log([[tabCordone]]);*/
-
-	/*	var geoJsonFeaturePoly = {
-"type": "FeatureCollection",
-                                                                                
-"features": [{
-
-    "type": "Feature",
-    "properties": {"party": "Democrat"},
-    "geometry": {
-        "type": "Polygon",
-        "coordinates": [[tabCordone]]
-    }
-}]
-};
-
-L.geoJson(geoJsonFeaturePoly,{
-	style:{
-    color: "#ff7800",
-    weight: 5,
-    opacity: 1
-}
-}).addTo(map);*/
-
-
-var states = [{
-    "type": "Feature",
-    "properties": {"party": "Republican"},
-    "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-data[0].polygonpoints
-        ]]
-    }
-}];
-
-L.geoJson(states, {
-    style: function(feature) {
-        switch (feature.properties.party) {
-            case 'Republican': return {color: "#ff0000"};
-            case 'Democrat':   return {color: "#0000ff"};
-        }
-    }
-}).addTo(map);
-
-
-
-	});
-     });
+		  
 
 			circles.addTo(map);
 
-		});
+		});//csv
 
 
 var legend = L.control({position: 'bottomleft'});
@@ -355,7 +298,8 @@ d3.csv("data/donneFinal.csv",function(data){
 			
             console.log(index,circle);
             if(circle != undefined){
-            	circle.tarif = elem.Tarif;            	
+            	circle.tarif = elem.Tarif; 
+            	circle.ville = elem.Ville;             	
 
             	circles.addLayer(circle);
             }
@@ -363,16 +307,7 @@ d3.csv("data/donneFinal.csv",function(data){
    
 			})
 			console.log("for each terminé");
-			 //map.addLayer(circles);
-			 circles
-			.addEventListener('mouseover',function(event){					  
-				 console.log( event.layer.tarif)
-				 //circles.clearLayers();
-				})
-    .on('click', function(evt) { 
-circles.bindPopup(evt.layer.tarif)
-     });
-
+			  
 			circles.addTo(map);
 
 		});
@@ -397,31 +332,55 @@ d3.csv("data/donneFinal.csv",function(data){
 			
             console.log(index,circle);
             if(circle != undefined){
-            	circle.tarif = elem.Tarif;            	
-
+            	circle.tarif = elem.Tarif;
+            	circle.ville = elem.Ville;         	
             	circles.addLayer(circle);
             }
 			
    
 			})
 			console.log("for each terminé");
-			 //map.addLayer(circles);
-			 circles
-			.addEventListener('mouseover',function(event){					  
-				 console.log( event.layer.tarif)
-				 //circles.clearLayers();
-				})
-    .on('click', function(evt) { 
-circles.bindPopup(evt.layer.tarif)
-     });
-
-			circles.addTo(map);
+			  circles.addTo(map);
 
 		});
 
 }
 
 
+function drawLimiteVille(ville){
+	$.get("https://nominatim.openstreetmap.org/search.php?q="+ville+"&format=json&polygon_geojson=1",
+	function(data){
+		 
+var states = [{
+    "type": "Feature",
+    "properties": {"party": "Republican"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": data[0].geojson.coordinates
+         
+    }
+}];
+
+
+ 
+ limiteVilleLayer.addLayer(L.geoJson(states, {
+    style: {
+    color: "#ff7800",
+    weight: 2,
+    opacity: 0.7
+}
+}));
+ limiteVilleLayer.addTo(map);
+
+	});//get
+ 
+	 
+}
+
+function deleteLimiteLayer(){
+	limiteVilleLayer.clearLayers();
+
+}
 
 	</script>
 
