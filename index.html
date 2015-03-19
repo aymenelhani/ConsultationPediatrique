@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <link rel="stylesheet" href="css/style_index.css">
+<script src="lib/jquery/jquery-1.11.2.min.js"></script>
+
+<script type="text/javascript">
+ // action sur le slider defilement des foto
+$(document).ready(function() {
+          
+  var currentPosition = 0;
+  var slideWidth = 500;
+  var slides1 = $('.slide1');
+  var numberOfSlides1 = slides1.length;
+  var slideShowInterval;
+  var speed = 3000;
+
+  
+  slideShowInterval = setInterval(changePosition, speed);
+  
+  slides1.wrapAll('<div id="slidesHolder1"></div>')
+  
+  slides1.css({ 'float' : 'left' });
+  
+  $('#slidesHolder1').css('width', slideWidth * numberOfSlides1);
+  
+  
+  function changePosition() {
+   if(currentPosition == numberOfSlides1 - 1) {
+    currentPosition = 0;
+   } else {
+    currentPosition++;
+   }
+   moveSlide();
+  }
+  
+  
+  function moveSlide() {
+    $('#slidesHolder1')
+      .animate({'marginLeft' : slideWidth*(-currentPosition)});
+  }
+
+ });
+</script>
+<script>
+// fonction qui sert à nous diriger vers d'autre pas
+ function Lien() {
+ i = document.Choix.pris.selectedIndex;
+ if (i == 0) return;
+ url = document.Choix.pris.options[i].value;
+ parent.location.href = url;
+}
+ </script>
+<!--<meta property="og:title" content="Pédiatrie Pratique" />-->
+</head>
+<body>
+  <div id="monsvg" >
+    <svg  width="100%" height="64px">
+    <defs>
+      <filter id="drop-shadow" filterUnits="userSpaceOnUse" width="100%" height="92">
+        <feGaussianBlur in="SourceAlpha" result="blur-out" stdDeviation="3" />
+        <feOffset in="blur-out" result="shadowoffset" dx="2" dy="2"/>
+        <feBlend in="SourceGraphic" in2="shadowoffset" mode="normal"/>
+      </filter>
+    </defs>
+    <linearGradient id="shaded" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#bbccee" stop-opacity="0"/>
+      <stop offset="70%" stop-color="red"/>
+    </linearGradient>
+    <text font-size="40" fill="url(#shaded)" stroke="#336" stroke-width="1px"
+    filter="url(#drop-shadow)" x="0" y="48px"  font-family="Arial">
+   Rendez-Vous Chez Le Pediatre
+    </text>
+  </svg>  
+
+  </div>
+ <div id="page">
+  <header>
+    se site est un site de renseignement pour les consultation pediatrique dans toute la france<br/>
+    IL sert à connaitre le montant d'une consultation pédiatrique, du délai durant lequel on obtient un rendez-vous,et les dépassements honoraires.
+   <div id="titre_pricipal">
+   </div>
+   <nav>
+      
+    </nav>
+
+  </header>
+  <div id="image_banniere">
+ .
+  <!-- <p align="center" text-align=".">Retour sur mes vacances aux États-Unis..<img src="image/photo_enfant.jpg"></p>-->
+</div>
+  </div>
+  <section>
+   <article>
+    <h1>generalites</h1>
+    se site est un site de renseignement pour les consultation pediatrique dans toute la france<br/>
+    IL sert à connaitre le montant d'une consultation pédiatrique, du délai durant lequel on obtient un rendez-vous,et les dépassements honoraires.
+    C'est le médecin des enfants ! Depuis leurs premières heures jusqu'à leurs quinze ans, le pédiatre les accompagne : aucun nouveau-né ne sort de la maternité sans être passé entre ses mains. De retour à la maison, la majorité des parents continuent aujourd'hui à consulter un de ces experts installés en cabinet. Sa connaissance des maladies rares évite bien souvent l'hospitalisation. Il peut également déceler des problèmes plus larges d'ordre psychologique, scolaire, etc.
+    Les journées du pédiatre en cabinet sont très longues. Chaque consultation peut durer une heure, et les semaines sont en moyenne de cinquante-trois heures ! Sans oublier les quelque dix-huit heures d'astreinte qui l'attendent la nuit ou le week-end, les visites en crèche ou en PMI, où il passe vérifier le bien-être des enfants en collectivité, et éventuellement son travail en maternité privée. En hôpital, une équipe de pédiatres est également dévolue aux services d'urgences. 
+   </article>
+   <aside>
+    <h1>choix de menu</h1>
+    <!--<img src="image/pied_page.jpg">-->
+    <div id="slideshow1">
+    <div id="slideshowWindow1">
+    
+        <div class="slide1">
+            <img src="img/afrique.jpg"  />
+        </div><!--/slide-->
+        
+        <div class="slide1">
+            <img src="img/pediatre.jpg" />
+        </div><!--/slide-->
+        
+        <div class="slide1">
+            <img src="img/pied_page.jpg"/>
+        </div><!--/slide-->
+            <div class="slide1">
+            <img src="img/bebe.jpg"/>
+        </div><!--/slide-->
+        <div class="slide1">
+            <img src="img/image0.gif"/>
+        </div><!--/slide-->
+        <div class="slide1">
+            <img src="img/bb.jpg"/>
+        </div><!--/slide-->
+        
+    </div><!--/slideshowWindow-->
+    <label for="menu_d'information">Navigation</label>
+    <FORM NAME="Choix">
+     <SELECT NAME="pris" onChange="Lien()">
+      <OPTION VALUE="">Choisir une option
+       <OPTION VALUE="../../pediaMap.html">PediaMap
+        <OPTION VALUE="../../histogramme.html">Histogram
+         
+         </SELECT>
+    </FORM>
+
+
+   </aside>
+  </section>
+  <footer>
+   <div id="liens">
+    <h1>SOURCE</h1>
+    <ul>
+    <li><a href="http://www.phosphore.com/metier/16/nom/pediatre">JOB PEDIATRE</a></li>
+     <li><a href="http://sante.lefigaro.fr/actualite/2011/01/18/10682-inquietudes-pour-lavenir-pediatrie-france">en savoir plus</a></li>
+    </ul>
+  </footer>
+ </div>
+</body>
+</html>

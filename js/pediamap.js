@@ -12,13 +12,13 @@ deleteLimiteLayer()
      })		
 
 		//Instanciation de l'objet map
-		var map = L.map('map', {
-			//layers: [ign, cassini_routes,cassini_urbain,cassini_hydro_l,cassini_hydro_s],
-			fullscreenControl: true,
-			fullscreenControlOptions: { // optional
-			title:"Fullscreen !"
-			}
-		});
+		var map = L.map('map',{
+  fullscreenControl: true,
+  fullscreenControlOptions: {
+    position: 'topleft'
+  }});
+
+
 
 		//définition de l'emprise initiale de la map
 		map.setView([48.75, 2], 8);
@@ -51,7 +51,7 @@ deleteLimiteLayer()
 
 		var allLimiteVilleLayer = new L.featureGroup();
 
-// get all coordinates of all coutry of data csv
+// get all coordinates of all coutries of data csv
 		d3.csv("data/donneFinal.csv",function(data){
 			 
 			data.forEach(function(elem,index,tab){
@@ -74,7 +74,7 @@ var states = [{
  
  allLimiteVilleLayer.addLayer(L.geoJson(states, {
     style: {
-    color: "#d1f2f1",
+    color: "#FF0066",
     weight: 2,
     opacity: 0.9
 }
@@ -107,24 +107,6 @@ var states = [{
 		//Ajout de l'échelle
 		L.control.scale().addTo(map);
 
-		//Ajout Geocoder
-       // var osmGeocoder = new L.Control.OSMGeocoder();
-		//map.addControl(osmGeocoder);		
-	
-
-		//ajout des titres et sous-titres
-		/*var title = new L.Control();
-		title.onAdd = function (map) {
-			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-			this.update();
-			return this._div;
-	    };
-	    title.update = function () {
-			this._div.innerHTML = '<h2>Les transports en <br> Ile-de-France </h2>2014<br><center><img src="img/stif_logo.png" /><br><img src="img/sncf_logo.png" /><br><img src="img/autolib_logo.png" /></center>'
-		};
-		title.addTo(map);	*/	
-
-
 		var circles = new L.featureGroup();
 		circles.on("layeradd",function(evt){
 			//console.log("add layer added");  
@@ -135,7 +117,7 @@ var states = [{
 
 		})
 		.on('click', function(evt) { 
-circles.bindPopup(evt.layer.tarif)
+//circles.bindPopup("Chargement en cours ...")
 deleteLimiteLayer()
 drawLimiteVille(evt.layer.ville)
      })		 

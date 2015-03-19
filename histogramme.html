@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" />
+
+  <title>Etude sur la consultation pediatrique</title>
+  <script src="lib/d3/d3.v3.min.js"></script>
+    <script src="lib/d3.tip.v0.6.3.js"></script>
+  <style type="text/css">
+
+   .svg {
+            font: 10px sans-serif;
+        }
+
+    .bar {
+            stroke: white;
+            fill: steelBlue;
+
+        }
+
+        rect.mover {
+            stroke: lightSteelBlue;
+            stroke-opacity: 0.3;
+            fill: lightSteelBlue;
+            fill-opacity: 0.1;
+        }
+
+        g.x text {
+          transform: rotate(90deg);
+          transform-origin: left top 0;
+
+        }
+
+        rect:hover {
+           fill: orange;
+        }
+
+
+        #liste{
+          width: 200px;
+          height: 150px;
+          float: right;
+
+        }
+
+
+
+        div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 60px;                  
+  height: 28px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+
+
+  .fixed {
+      position: fixed;
+      top: 0;
+      right: 50px;
+      width: 250px;
+      background-color: white;
+    }
+
+  </style>
+
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">
+        Home
+      </a>
+    </div>
+
+
+<form class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <span class="glyphicon glyphicon-registration-mark" style="color:white">Changer la variable</span>
+     
+<select class="form-control" onchange="updateX(this.value)" >
+      <option value="Tarif"> Tarif </option>
+      <option value="Dpassement_honoraires"> Dépassement honoraire </option>
+      <option value="Dlai_rendez_vous"> Délais RDV </option>
+</select>
+ 
+
+
+  </div>
+  
+  
+</form>
+
+
+    
+  </div>
+</nav>
+
+
+<!-- liste permettant de choisir d'afficher entre le tarif de consultation et le depassement honoraire -->
+
+
+
+
+
+
+
+
+
+    <div id="diagram" style="height:600px; padding-top: 4cm;" class="example_div"></div>
+
+
+
+    <script src="js/histogramme.js"></script>
+</body>
+
+
+</html>
