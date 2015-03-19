@@ -5,6 +5,8 @@ var defaultColor = colorbrewer.Pastel2[5];
 var colorScale = d3.scale.quantize().range(defaultColor).domain([0,60])
 
 
+
+
 limiteVilleLayer.on('click', function(evt) { 
 deleteLimiteLayer()
      })		
@@ -48,6 +50,8 @@ deleteLimiteLayer()
 
 
 		var allLimiteVilleLayer = new L.featureGroup();
+
+// get all coordinates of all coutry of data csv
 		d3.csv("data/donneFinal.csv",function(data){
 			 
 			data.forEach(function(elem,index,tab){
@@ -123,11 +127,11 @@ var states = [{
 
 		var circles = new L.featureGroup();
 		circles.on("layeradd",function(evt){
-			console.log("add layer added");  
+			//console.log("add layer added");  
 
 		})
 		.on("layerremove",function(evt){
-			console.log("add layer added");	
+			//console.log("add layer added");	
 
 		})
 		.on('click', function(evt) { 
@@ -136,24 +140,26 @@ deleteLimiteLayer()
 drawLimiteVille(evt.layer.ville)
      })		 
 		.on("mouseout",function(){
-    	console.log("mouse out circle");    	
+    	//console.log("mouse out circle"); 
+    	info.update();   	
 
     })
     .on('mouseover',function(event){					  
-				 console.log( event.layer.tarif)
+				// console.log( event.layer.tarif)
+				info.update(event);
 				
 				})
     
 function drawCircles(){
 	d3.csv("data/donneFinal.csv",function(data){
-			console.log(data);
+			//console.log(data);
 			data.forEach(function(elem,index,tab){
 				
 				if( (elem.lat && elem.lon) != "NaN")
 			 var circle = new L.circle([+elem.lat,+elem.lon],+elem.Tarif*30)
 			.setStyle({fill:true, fillColor: colorScale(+elem.Dlai_rendez_vous), fillOpacity:0.6});	
 			
-            console.log(index,circle);
+           // console.log(index,circle);
             if(circle != undefined){
             	circle.tarif = elem.Tarif; 
             	circle.ville = elem.Ville;  
@@ -162,7 +168,7 @@ function drawCircles(){
             }			
    
 			})
-			console.log("for each terminé");	  
+			//console.log("for each terminé");	  
 
 			circles.addTo(map);
 
@@ -174,11 +180,11 @@ drawCircles();
 var legend = L.control({position: 'bottomleft'});
 
 		// fonction de creation de la légende
-		legend.onAdd = function (map) {
+
+		function changeLegendColor(){
+legend.onAdd = function (map) {
     		var div = L.DomUtil.create('div', 'info legend'),
-        		grades = [0,12,15,16,17,18,19,20],
-        		labels = [];
-			div.innerHTML += '<h4>Tarif </h4><i style="background:#aaa"></i> inconnu<br>';   			
+        		div.innerHTML += '<h4>Couleur </h4><i style="background:#aaa"></i> <br>';   			
 
     for(i=0;i<defaultColor.length;i++){
  var bornes=colorScale.invertExtent(defaultColor[i])
@@ -188,12 +194,31 @@ div.innerHTML+="</ul>"
 
     		return div;
 		};
-		legend.addTo(map);
 
+		legend.update = function(colorPanel){
+		console.log(this);
+			var div = this._container;
+this._container.innerHTML = "";
+div.innerHTML += '<h4>Couleur </h4><i style="background:#aaa"></i> <br>'; 
+ for(i=0;i<colorPanel.length;i++){
+ var bornes=colorScale.invertExtent(colorPanel[i])
+ div.innerHTML+="<li> <span style='color:"+colorPanel[i]+";font-size:1.5em'>&#9632;</span> [" + d3.round(bornes[0],1)+", "+ d3.round(bornes[1],1)+"]</li>"
+}
+div.innerHTML+="</ul>"
+
+		}
+
+		legend.addTo(map);
+		}
+
+		changeLegendColor();
+		
+		
+ 
 	
  //onselect event pour le choix de variable représenté par le rayon des cercles
 function updateRadius(value){
-console.log("update rayon")
+//console.log("update rayon")
 selectedCircleRadius = value;
 
 circles.clearLayers();
@@ -214,7 +239,7 @@ d3.csv("data/donneFinal.csv",function(data){
             }			
    
 			})
-			console.log("for each terminé");
+			//console.log("for each terminé");
 			  
 			circles.addTo(map);
 
@@ -246,7 +271,7 @@ d3.csv("data/donneFinal.csv",function(data){
 			
    
 			})
-			console.log("for each terminé");
+			//console.log("for each terminé");
 			  circles.addTo(map);
 
 		});
@@ -287,3 +312,51 @@ function deleteLimiteLayer(){
 	limiteVilleLayer.clearLayers();
 
 }
+
+function changeColorPanel(value){
+	
+	var panel = colorbrewer[value];
+defaultColor = panel[5];
+colorScale = d3.scale.quantize().range(defaultColor).domain([0,60]);
+updateColor(selectedCircleColor);
+legend.update(defaultColor);
+
+}
+ 
+
+
+var info = L.control();
+		info.onAdd = function (map) {
+    			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    			this.update();
+    			return this._div;
+		};
+
+		// fonction de mise à jour des informations
+		info.update = function (props) {
+			console.log(props);
+			if(props != undefined){
+				this._div.setAttribute("style","width:300px");
+    			this._div.innerHTML = '<h4>Informations :</h4>'+
+        		'<b> Ville: ' + props.layer.ville + '</b> <br>' +
+        		'<b> Tarif: ' + props.layer.tarif + '</b>' 
+			}
+			else
+			{
+				this._div.innerHTML = "";
+				this._div.setAttribute("style","width:1px");
+			}
+
+			
+        		
+		};
+
+		// ajout de la zone à la carte
+		info.addTo(map);
+
+
+		
+
+ 
+
+
