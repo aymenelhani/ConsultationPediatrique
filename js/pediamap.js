@@ -163,6 +163,8 @@ function drawCircles(){
             if(circle != undefined){
             	circle.tarif = elem.Tarif; 
             	circle.ville = elem.Ville;  
+            	circle.dpassement = elem.Dpassement_honoraires;  
+            	circle.dlai = elem.Dlai_rendez_vous; 
                    
             	circles.addLayer(circle);
             }			
@@ -183,8 +185,8 @@ var legend = L.control({position: 'bottomleft'});
 
 		function changeLegendColor(){
 legend.onAdd = function (map) {
-    		var div = L.DomUtil.create('div', 'info legend'),
-        		div.innerHTML += '<h4>Couleur </h4><i style="background:#aaa"></i> <br>';   			
+    		var div = L.DomUtil.create('div', 'info legend');
+        	 	div.innerHTML += '<h4>Couleur </h4><i style="background:#aaa"></i> <br>';   			
 
     for(i=0;i<defaultColor.length;i++){
  var bornes=colorScale.invertExtent(defaultColor[i])
@@ -233,7 +235,9 @@ d3.csv("data/donneFinal.csv",function(data){
             console.log(index,circle);
             if(circle != undefined){
             	circle.tarif = elem.Tarif; 
-            	circle.ville = elem.Ville;             	
+            	circle.ville = elem.Ville;   
+            	 	circle.dpassement = elem.Depassement_honoraires;  
+            	circle.dlai = elem.Dlai_rendez_vous;           	
 
             	circles.addLayer(circle);
             }			
@@ -265,7 +269,9 @@ d3.csv("data/donneFinal.csv",function(data){
             console.log(index,circle);
             if(circle != undefined){
             	circle.tarif = elem.Tarif;
-            	circle.ville = elem.Ville;         	
+            	circle.ville = elem.Ville;    
+            	 	circle.dpassement = elem.Dpassement_honoraires;  
+            	circle.dlai = elem.Dlai_rendez_vous;      	
             	circles.addLayer(circle);
             }
 			
@@ -336,10 +342,15 @@ var info = L.control();
 		info.update = function (props) {
 			console.log(props);
 			if(props != undefined){
-				this._div.setAttribute("style","width:300px");
+				this._div.setAttribute("style","width:250px");
+				//this._div.setAttribute("style","height:200px");
     			this._div.innerHTML = '<h4>Informations :</h4>'+
-        		'<b> Ville: ' + props.layer.ville + '</b> <br>' +
-        		'<b> Tarif: ' + props.layer.tarif + '</b>' 
+        		'<b> Ville: </b>' + props.layer.ville + ' <br>' +
+        		'<b> Tarif: </b>' + props.layer.tarif + ' <br>'+ 
+        		'<b> Depassement honoraire: </b>' + props.layer.dpassement  + '  <br>' +
+        		'<b> Delais de RDV: </b>' + props.layer.dlai  + '  <br>' ;
+        		 	 
+            	  
 			}
 			else
 			{
