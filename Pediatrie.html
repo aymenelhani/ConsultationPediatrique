@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Etude sur la consultation pediatrique</title>
+	<script src="./lib/d3/d3.v3.min.js" charset="utf-8"></script>
+	<style>
+
+svg {
+  font: 10px sans-serif;
+}
+
+rect {
+	
+  fill: steelblue;
+  stroke:red;/*bordure de rect*/
+  
+}
+
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+
+</head>
+<body>
+	<div id="diagram"></div>
+	<p>je suis dan le body</p>
+	<script type="text/javascript">
+		console.log("tests");
+
+		// definition de la marge
+		var margin = {top: 10, right: 20, bottom: 20, left: 70},
+    width = 560 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+     var padding = {top: 15, right: 15, bottom: 25, left: 30};
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  	.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+   var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+
+
+
+
+d3.csv("/data/donneFinal.csv", function(bins) {
+console.log(bins)
+  // Coerce types.
+  bins.forEach(function(bin) {
+    bin.Tarif = +bin.Tarif;
+    bin.Dpassement_horaires = +bin.Dpassement_horaires;
+  });
+
+  // Normalize each bin to so that height = quantity/width;
+  // see http://en.wikipedia.org/wiki/Histogram#Examples
+  for (var i = 1, n = bins.length, bin; i < n; i++) {
+    bin = bins[i];
+    bin.offset = bins[i - 1].Tarif;
+    bin.width = bin.Tarif ;
+    bin.height = bin.Dpassement_horaires;
+  }
+
+  // Drop the first bin, since it's incorporated into the next.
+  bins.shift();
+  console.log(width)
+
+  // Set the scale domain.
+  x.domain([0, width]);
+  y.domain([0, width]);
+
+  /*x.domain([0, d3.max(bins.map(function(d) { return d.width ; }))]);
+  y.domain([0, d3.max(bins.map(function(d) { return d.Tarif + d.width; }))]);*/
+
+  // Add the bins.
+svg.selectAll(".bin")
+      .data(bins)
+    .enter().append("rect")
+      .attr("class", "bin")
+      .attr("x", function(d,i) { return  i* d.width })
+      .attr("width", function(d) { return x(d.width); })
+      .attr("y", function(d) {if(d.Tarif=="NaN") return 0; else return y(d.Tarif); })
+      .attr("height", function(d) { return 29; });
+
+
+
+  /*svg.selectAll(".bin")
+      .data(bins)
+    .enter().append("rect")
+      .attr("class", "bin")
+      .attr("x", function(d,i) { return  i* d.width })
+      .attr("width", function(d) { return x(d.width) - 80; })
+      .attr("y", function(d) {if(d.Dpassement_horaires=="NaN") return 0; else return y(d.Dpassement_horaires); })
+      .attr("height", function(d) { if(d.Dpassement_horaires=="NaN")return 0; else return y(d.Dpassement_horaires); });*/
+
+         /*.attr("width", 20)
+         .attr("height", 100);*/
+
+
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.svg.axis()
+      .scale(x)
+      .orient("bottom"));
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.svg.axis()
+      .scale(y)
+      .orient("left"));
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	</script>
+
+</body>
+</html>
