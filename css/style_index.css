@@ -1,7 +1,7 @@
 
 
 body{
- background: url('../image/fond_fleurs.jpg');
+ background: url('../img/fond_fleurs.jpg');
  font-family: 'Trebuchet MS',Arial,sans-serif;
  color: #181818;
  margin: 0;
@@ -19,7 +19,7 @@ section h1,footer h1,header h1{
 }
 /*header
 {
- background: url('image/lo.jpg') repeat-x bottom;
+ background: url('img/lo.jpg') repeat-x bottom;
 }*/
 #titre_pricipal
 {
@@ -30,7 +30,7 @@ section h1,footer h1,header h1{
    margin-top: 15px;
     height: 500px;
     border-radius: 5px;
-    background: url('../image/photo_enfant.jpg')repeat;
+    background: url('../img/photo_enfant.jpg')repeat;
     position: relative;
     box-shadow: 0px 4px 4px #1c1a19;
     margin-bottom: 25px;
